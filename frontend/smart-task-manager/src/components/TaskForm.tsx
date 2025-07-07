@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-function TaskForm() {
+interface TaskFormProps {
+    onAddTask: (title: string) => void;
+}
+
+/**
+*TaskForm component-input field to add new tasks
+*/
+function TaskForm({ onAddTask }: TaskFormProps) {
     const [title, setTitle] = useState('');
-
+    /**
+    *Handles form submission to add a task
+    */
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Task submitted:', title);
-        setTitle('');
+
+        //Prevent adding empty or whitespace-only tasks
+        if (title.trim()) {
+            onAddTask(title.trim());
+            setTitle('');
+        }
     };
 
     return (
