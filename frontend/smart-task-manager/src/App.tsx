@@ -21,7 +21,19 @@ function App() {
       status: 'pending'
     };
     setTasks([newTask, ...tasks]);
+
   };
+
+  const updateTaskStatus = (taskId: number, newStatus: Task['status']) => {
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === taskId ? { ...task, status: newStatus } : task)
+    )
+  }
+
+  const deleteTask = (taskId: number) => {
+    setTasks(prev => prev.filter(task => task.id !== taskId));
+  }
 
   return (
     <div className='container py-5'>
@@ -32,7 +44,7 @@ function App() {
       {/* Task input form */}
       <TaskForm onAddTask={addTask} />
       {/* Display list of the tasks */}
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} onStatusChange={updateTaskStatus} onDelete={deleteTask} />
     </div>
   )
 }
