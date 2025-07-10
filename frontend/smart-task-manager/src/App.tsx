@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import TaskForm from './components/TaskForm.tsx';
 import TaskList from './components/TaskList.tsx';
+import Loader from './components/Loader.tsx'
 import type { Task } from './types/Task.ts';
 import * as taskService from './services/taskService.ts';
 
@@ -12,11 +13,18 @@ function App() {
   //App-level state for storing all tasks
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  //Fetch tasks from backend on first load
-  useEffect(() => {
-    taskService.getTasks().then(setTasks);
+  //Tracks if app is still fetching tasks
+  const [loading, setLoading] = useState(true);
 
+  //Fetch tasks from backend on component mount 
+  useEffect(() => {
+    taskService.getTasks()
+      .then(setTasks) //Set the tasks on successful response
+      .catch(console.error) //Log any error for debugging (to be replaced with proper handling)
+      .finally(() => setLoading(false)); //Hide loader whether request succeeded or failed
   }, []);
+
+  //
 
   /**
   *Handles adding a new task to the list
@@ -30,7 +38,7 @@ function App() {
   /**
    * Handles updating a task status 
    * @param taskId 
-   * @param newStatus 
+   * @param newStatus  (pending, in-progress, completed)
    */
   const updateTaskStatus = async (id: number, status: Task['status']) => {
     const updateTask = await taskService.updateTaskStatus(id, status);
@@ -48,13 +56,21 @@ function App() {
   return (
     <div className='container py-5'>
       <h1 className='text-center fw-bold mb-4'>Smart Task Manager</h1>
-      <p className='text-muted'>Track your pending, in-progress, and completed tasks</p>
-      {/* Task input form */}
-      <TaskForm onAddTask={addTask} />
-      {/* Display list of the tasks */}
-      <TaskList tasks={tasks} onStatusChange={updateTaskStatus} onDelete={deleteTask} />
+      {/**Show loader while data is being fetched */}
+      {
+        loading ? (
+          <Loader />
+        ) : (
+          <>
+            {/* Task input form */}
+            <TaskForm onAddTask={addTask} />
+            {/* Display list of the tasks */}
+            <TaskList tasks={tasks} onStatusChange={updateTaskStatus} onDelete={deleteTask} />
+          </>
+        )}
     </div>
-  )
+
+  );
 }
 
 export default App
