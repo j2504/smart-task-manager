@@ -3,6 +3,7 @@ import TaskForm from './components/TaskForm.tsx';
 import TaskList from './components/TaskList.tsx';
 import Loader from './components/Loader.tsx'
 import { ThemeContext } from './context/ThemeContext.tsx';
+import type { SortOption } from './types/SortOption.ts';
 import type { Task } from './types/Task.ts';
 import * as taskService from './services/taskService.ts';
 
@@ -19,6 +20,9 @@ function App() {
 
   //Access current theme and toggle function
   const { theme, toggleTheme } = useContext(ThemeContext);
+
+  //This state tracks the currently selected sort method from the dropdown
+  const [sortBy, setSortBy] = useState<SortOption>('default');
 
   //Fetch tasks from backend on component mount 
   useEffect(() => {
@@ -76,8 +80,28 @@ function App() {
           <>
             {/* Task input form */}
             <TaskForm onAddTask={addTask} />
+            {/** Dropdown menu to allow user to select how tasks are sorted */}
+            <div className='mb-3'>
+              <label htmlFor="sortSelect" className='form-label fw-semibold'>Sort Tasks:</label>
+
+              {/** Select input to choose sort option */}
+              <select
+                id='sortSelect' // <- Associates with label
+                className='form-select'
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}//Cast to expected sort type
+              >
+                <option value='default'>Default (by creation)</option>
+                <option value='status'>By Status (Pending → completed)</option>
+                <option value='status-reverse'>By Status (Completed → Pending)</option>
+              </select>
+            </div>
             {/* Display list of the tasks */}
-            <TaskList tasks={tasks} onStatusChange={updateTaskStatus} onDelete={deleteTask} />
+            <TaskList tasks={tasks}
+              onStatusChange={updateTaskStatus}
+              onDelete={deleteTask}
+              sortBy={sortBy}
+            />
           </>
         )}
     </div>

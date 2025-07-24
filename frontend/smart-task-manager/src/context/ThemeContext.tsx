@@ -7,6 +7,7 @@ interface ThemeContextType {
 }
 
 //Create the Context
+// eslint-disable-next-line react-refresh/only-export-components
 export const ThemeContext = createContext<ThemeContextType>({
     theme: 'light',
     toggleTheme: () => { },

@@ -6,12 +6,13 @@ interface TaskListProps {
     tasks: Task[];
     onStatusChange: (id: number, status: Task['status']) => void;
     onDelete: (id: number) => void;
+    sortBy: 'status' | 'status-reverse' | 'default'; //Prop for sorting method
 }
 
 /**
 * TaskList component - displays a list of tasks
 */
-function TaskList({ tasks, onStatusChange, onDelete }: TaskListProps) {
+function TaskList({ tasks, onStatusChange, onDelete, sortBy }: TaskListProps) {
 
     //Function to cycle through statuses: pending -> in-progress -> completed
     const getNextStatus = (status: Task['status']): Task['status'] => {
@@ -34,9 +35,27 @@ function TaskList({ tasks, onStatusChange, onDelete }: TaskListProps) {
         }
     };
 
+    //Define sort priority for each status
+    const statusOrder = {
+        'pending': 0,
+        'in-progress': 1,
+        'completed': 2
+    };
+
+    //Sort tasks based on the selected method
+    const sortedTasks = [...tasks].sort((a, b) => {
+        if (sortBy === 'status') {
+            return statusOrder[a.status] - statusOrder[b.status]; //Ascending
+        }
+        if (sortBy === 'status-reverse') {
+            return statusOrder[b.status] - statusOrder[a.status]; //Descending
+        }
+        return 0; //Default, don't sort
+    });
+
     return (
         <ul className="list-group">
-            {tasks.map((task) => (
+            {sortedTasks.map((task) => (
                 <li key={task.id} className="list-group-item d-flex justify-content-between align-items-center">
                     {/** Display task title */}
                     <span>{task.title}</span>

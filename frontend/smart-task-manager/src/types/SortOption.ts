@@ -1,0 +1,1 @@
+export type SortOption = 'default' | 'status' | 'status-reverse';
