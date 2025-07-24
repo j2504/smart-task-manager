@@ -1,5 +1,7 @@
 import type { Task } from "../types/Task";
 
+
+//Props expected from parent component (App.tsx)
 interface TaskListProps {
     tasks: Task[];
     onStatusChange: (id: number, status: Task['status']) => void;
@@ -11,38 +13,60 @@ interface TaskListProps {
 */
 function TaskList({ tasks, onStatusChange, onDelete }: TaskListProps) {
 
+    //Function to cycle through statuses: pending -> in-progress -> completed
+    const getNextStatus = (status: Task['status']): Task['status'] => {
+        if (status === 'pending') return 'in-progress';
+        if (status === 'in-progress') return 'completed';
+        return 'pending';
+    };
+
+    //Get Bootstrap badge class based on status
+    const getBadgeClass = (status: Task['status']): string => {
+        switch (status) {
+            case 'pending':
+                return 'bg-secondary';
+            case 'in-progress':
+                return 'bg-info';
+            case 'completed':
+                return 'bg-success';
+            default:
+                return 'bg-secondary';
+        }
+    };
+
     return (
         <ul className="list-group">
-            {tasks.map(task => (
+            {tasks.map((task) => (
                 <li key={task.id} className="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{task.title}</strong>
-                        <div className="text-muted small">Status: {task.status}</div>
-                    </div>
+                    {/** Display task title */}
+                    <span>{task.title}</span>
+                    {/** Action buttons: status badge, update, delete */}
                     <div className="d-flex align-items-center gap-2">
-                        {/* Hidden label for accessibility*/}
-                        <label htmlFor={`status-${task.id}`} className="visually-hidden">
-                            Change status for task: {task.title}
-                        </label>
-                        <select
-                            id={`status-${task.id}`}
-                            className="form-select form-select-sm"
-                            value={task.status}
-                            onChange={(e) => onStatusChange(task.id, e.target.value as Task['status'])}
-                        >
-                            <option value={'pending'}>Pending</option>
-                            <option value={'in-progress'}>In Progress</option>
-                            <option value={'completed'}>Completed</option>
-                        </select>
 
+                        {/** Color-coded badge for current status */}
+                        <span className={`badge ${getBadgeClass(task.status)}`}>
+                            {task.status}
+                        </span>
+
+                        {/** Update status button (accessible) */}
+                        <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => onStatusChange(task.id!, getNextStatus(task.status))}
+                            aria-label={`Change status of task "${task.title}"`}
+                            title="Change status"
+                        >
+                            {/** Accessible icon with hidden text */}
+                            <span aria-hidden='true'>↻</span>
+                        </button>
+                        {/** Delete task button (accessible) */}
                         <button
                             className="btn btn-sm btn-outline-danger"
-                            onClick={() => onDelete(task.id)}
+                            onClick={() => onDelete(task.id!)}
+                            aria-label={`Delete task "${task.title}"`}
+                            title="Delete task"
                         >
-                            <i className="bi i-trash" aria-hidden='true'></i>
-                            <span className="visually-hidden">Delete task</span>
+                            <span aria-hidden="true">🗑</span>
                         </button>
-
                     </div>
 
                 </li>
