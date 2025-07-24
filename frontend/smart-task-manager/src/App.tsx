@@ -58,69 +58,36 @@ function App() {
 
   const handleStatusChange = async (id: number, newStatus: Task["status"]) => {
     try {
-
       // Find the task in state by ID
-
       const taskToUpdate = tasks.find((task) => task.id === id);
 
-
-
       // If not found, exit early and show an error
-
       if (!taskToUpdate) {
-
         toast.error('Task not found');
-
         return;
-
       }
 
-
-
       // Create a new object with the updated status
-
       const updatedTask: Task = {
-
         ...taskToUpdate,
-
         status: newStatus,
-
       };
 
-
-
       // Send update request to backend
-
       const response = await axios.put<Task>(
-
         `http://localhost:8080/api/tasks/${id}`,
-
         updatedTask
-
       );
-
-
 
       // Update the task list in state with the returned updated task
-
       setTasks((prevTasks) =>
-
         prevTasks.map((task) =>
-
           task.id === id ? response.data : task
-
         )
-
       );
-
-
-
       toast.success(`Status updated to "${newStatus}"`);
-
     } catch (error) {
-
       console.error('Failed to update task status:', error);
-
       toast.error('Error updating task status');
     }
   };
