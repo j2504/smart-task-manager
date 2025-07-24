@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
 import TaskForm from './components/TaskForm.tsx';
 import TaskList from './components/TaskList.tsx';
+import { ToastContainerWrapper } from './components/ToastContainerWrapper.tsx';
 import Loader from './components/Loader.tsx'
 import { ThemeContext } from './context/ThemeContext.tsx';
+import { toast } from 'react-toastify';
 import type { SortOption } from './types/SortOption.ts';
 import type { Task } from './types/Task.ts';
 import * as taskService from './services/taskService.ts';
+import axios from 'axios';
 
 
 /**
@@ -36,11 +39,16 @@ function App() {
 
   /**
   *Handles adding a new task to the list
-  * @param title - The title of the task
   */
-  const addTask = async (title: string) => {
-    const newTask = await taskService.createTask(title);
-    setTasks((prev) => [newTask, ...prev]);
+  const addTask = async (newTask: Task) => {
+    try {
+      const response = await axios.post<Task>('/api/tasks', newTask);
+      setTasks((prevTasks) => [...prevTasks, response.data]);
+      toast.success('Task added successfully!');//show success toast
+    } catch (error) {
+      console.error('Failed to add task:', error);
+      toast.error('Failed to add task');//show error toast
+    }
   };
 
   /**
@@ -48,18 +56,29 @@ function App() {
    * @param taskId 
    * @param newStatus  (pending, in-progress, completed)
    */
-  const updateTaskStatus = async (id: number, status: Task['status']) => {
-    const updateTask = await taskService.updateTaskStatus(id, status);
-    setTasks((prev) =>
-      prev.map((task) =>
-        (task.id === id ? updateTask : task))
-    );
-  }
+  const updateTaskStatus = async (taskId: number, newStatus: string) => {
+    try {
+      const response = await axios.patch<Task>(`/api/tasks/${taskId}`, { status: newStatus });
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === task.id ? response.data : task))
+      );
+      toast.success('Task status updated');
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error('Error updating status');
+    }
+  };
 
-  const deleteTask = async (id: number) => {
-    await taskService.deleteTask(id);
-    setTasks((prev) => prev.filter(task => task.id !== id));
-  }
+  const deleteTask = async (taskId: number) => {
+    try {
+      await axios.delete(`/api/tasks/${taskId}`);
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      toast.success('Task deleted'); //succes toast
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+      toast.error('Error deleting task'); // error toast
+    }
+  };
 
   return (
     <div className='container py-5'>
@@ -102,6 +121,7 @@ function App() {
               onDelete={deleteTask}
               sortBy={sortBy}
             />
+            <ToastContainerWrapper />
           </>
         )}
     </div>
