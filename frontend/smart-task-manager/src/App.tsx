@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import TaskForm from './components/TaskForm.tsx';
 import TaskList from './components/TaskList.tsx';
 import Loader from './components/Loader.tsx'
+import { ThemeContext } from './context/ThemeContext.tsx';
 import type { Task } from './types/Task.ts';
 import * as taskService from './services/taskService.ts';
 
@@ -15,6 +16,9 @@ function App() {
 
   //Tracks if app is still fetching tasks
   const [loading, setLoading] = useState(true);
+
+  //Access current theme and toggle function
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   //Fetch tasks from backend on component mount 
   useEffect(() => {
@@ -55,7 +59,15 @@ function App() {
 
   return (
     <div className='container py-5'>
-      <h1 className='text-center fw-bold mb-4'>Smart Task Manager</h1>
+      {/** Header section with dark mode toggle */}
+      <div className='d-flex justify-content-between align-items-center mb-4'>
+        <h1 className='text-center fw-bold mb-4'>Smart Task Manager</h1>
+        {/** Dark/Light toggle button */}
+        <button className={`btn btn-sm ${theme === 'dark' ? 'btn-light' : 'btn-dark'}`}
+          onClick={toggleTheme}>
+          {theme === 'dark' ? ' ☀ Light Mode' : ' 🌙 Dark Mode'}
+        </button>
+      </div>
       {/**Show loader while data is being fetched */}
       {
         loading ? (
