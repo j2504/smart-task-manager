@@ -1,8 +1,9 @@
 import { useState } from "react";
-import type { Task } from "../types/Task";
+import type { CreateTask } from "../types/Task";
+
 
 interface TaskFormProps {
-    onAddTask: (newTask: Task) => void;
+    onAddTask: (task: CreateTask) => void;
 }
 
 /**
@@ -20,8 +21,7 @@ function TaskForm({ onAddTask }: TaskFormProps) {
         if (!title.trim()) return;
 
         //Create a new Task object using the input value
-        const newTask: Task = {
-            id: Date.now(), //temp unique ID; replace with backend - generated if needed
+        const newTask: CreateTask = {
             title: title.trim(), //Clean up the input 
             status: 'pending', // default status for all new tasks
         };

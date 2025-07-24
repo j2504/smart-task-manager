@@ -70,7 +70,7 @@ function TaskList({ tasks, onStatusChange, onDelete, sortBy }: TaskListProps) {
                         {/** Update status button (accessible) */}
                         <button
                             className="btn btn-sm btn-outline-primary"
-                            onClick={() => onStatusChange(task.id!, getNextStatus(task.status))}
+                            onClick={() => onStatusChange(task.id, getNextStatus(task.status))}
                             aria-label={`Change status of task "${task.title}"`}
                             title="Change status"
                         >
