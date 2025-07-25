@@ -1,6 +1,9 @@
 package com.smarttask.model;
 
 import lombok.*;
+
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 
 /**
@@ -24,5 +27,7 @@ public class Task {
 	 * - completed
 	 */
 	private String status;
+	//used to track when a task is due
+	private LocalDate dueDate;
 	
 }
