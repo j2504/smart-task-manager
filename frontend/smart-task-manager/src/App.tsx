@@ -3,6 +3,7 @@ import TaskForm from './components/TaskForm.tsx';
 import TaskList from './components/TaskList.tsx';
 import { ToastContainerWrapper } from './components/ToastContainerWrapper.tsx';
 import Loader from './components/Loader.tsx'
+import TaskCalendar from './components/TaskCalender.tsx';
 import { ThemeContext } from './context/ThemeContext.tsx';
 import { toast } from 'react-toastify';
 import type { SortOption } from './types/SortOption.ts';
@@ -144,6 +145,7 @@ function App() {
               onDelete={deleteTask}
               sortBy={sortBy}
             />
+            <TaskCalendar tasks={tasks} />
             <ToastContainerWrapper />
           </>
         )}
