@@ -44,9 +44,41 @@ function TaskCalendar({ tasks }: TaskCalendarProps) {
                 start: new Date(task.dueDate),
                 end: new Date(task.dueDate),
                 allDay: true,
+                resource: { status: task.status }, //Pass status to style
             })),
         [tasks]
     );
+
+    /**
+    *  Apply dynamic styling to events based on status (pending, in-progress, completed)
+    */
+    const eventStyleGetter = (event: Event) => {
+        const status = event.resource?.status || 'pending';
+
+        let backgroundColor = '';
+        switch (status) {
+            case 'completed':
+                backgroundColor = '#198754'; // Bootstrap green
+                break;
+            case 'in-progress':
+                backgroundColor = '#0d6efd'; // Bootstrap blue
+                break;
+            case 'pending':
+            default:
+                backgroundColor = '#6c757d'; // Bootstrap gray
+                break;
+        }
+
+        return {
+            style: {
+                backgroundColor,
+                color: 'white',
+                borderRadius: '4px',
+                border: 'none',
+                padding: '2px 6px',
+            },
+        };
+    };
 
     return (
         <div style={{ height: '500px' }} className='my-4'>
@@ -57,10 +89,11 @@ function TaskCalendar({ tasks }: TaskCalendarProps) {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: '500' }}
+                eventPropGetter={eventStyleGetter}
                 view={view}
-                onView={(newView) => setView(newView)}
+                onView={setView}
                 date={date}
-                onNavigate={(newDate) => setDate(newDate)}
+                onNavigate={setDate}
 
             />
         </div>
