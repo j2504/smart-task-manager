@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import TaskForm from './components/TaskForm.tsx';
 import TaskList from './components/TaskList.tsx';
 import { ToastContainerWrapper } from './components/ToastContainerWrapper.tsx';
@@ -10,6 +11,7 @@ import type { SortOption } from './types/SortOption.ts';
 import type { CreateTask, Task } from './types/Task.ts';
 import * as taskService from './services/taskService.ts';
 import axios from 'axios';
+import Sidebar from './components/Sidebar.tsx';
 
 
 /**
@@ -105,53 +107,72 @@ function App() {
   };
 
   return (
-    <div className='container py-5'>
-      {/** Header section with dark mode toggle */}
-      <div className='d-flex justify-content-between align-items-center mb-4'>
-        <h1 className='text-center fw-bold mb-4'>Smart Task Manager</h1>
-        {/** Dark/Light toggle button */}
-        <button className={`btn btn-sm ${theme === 'dark' ? 'btn-light' : 'btn-dark'}`}
-          onClick={toggleTheme}>
-          {theme === 'dark' ? ' ☀ Light Mode' : ' 🌙 Dark Mode'}
-        </button>
+    <Router>
+      <div className='d-flex'>
+        {/** Sidebar on the left */}
+        <Sidebar />
+
+        {/** Main Content */}
+        <div className='flex-grow-1 container py-5'>
+
+
+          {/**Show loader while data is being fetched */}
+          {
+            loading ? (
+              <Loader />
+            ) : (
+              <>
+                {/** Header section with dark mode toggle */}
+                <div className='d-flex justify-content-between align-items-center mb-4'>
+                  <h1 className='text-center fw-bold mb-4'>Smart Task Manager</h1>
+                  {/** Dark/Light toggle button */}
+                  <button className={`btn btn-sm ${theme === 'dark' ? 'btn-light' : 'btn-dark'}`}
+                    onClick={toggleTheme}>
+                    {theme === 'dark' ? ' ☀ Light Mode' : ' 🌙 Dark Mode'}
+                  </button>
+                </div>
+
+                <Routes>
+                  <Route
+                    path='/'
+                    element={
+                      <>
+                        {/* Task input form */}
+                        <TaskForm onAddTask={addTask} />
+                        {/** Dropdown menu to allow user to select how tasks are sorted */}
+                        <div className='mb-3'>
+                          <label htmlFor="sortSelect" className='form-label fw-semibold'>Sort Tasks:</label>
+
+                          {/** Select input to choose sort option */}
+                          <select
+                            id='sortSelect' // <- Associates with label
+                            className='form-select'
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as SortOption)}//Cast to expected sort type
+                          >
+                            <option value='default'>Default (by creation)</option>
+                            <option value='status'>By Status (Pending → completed)</option>
+                            <option value='status-reverse'>By Status (Completed → Pending)</option>
+                          </select>
+                        </div>
+                        {/* Display list of the tasks */}
+                        <TaskList tasks={tasks}
+                          onStatusChange={handleStatusChange}
+                          onDelete={deleteTask}
+                          sortBy={sortBy}
+                        />
+                      </>
+                    }
+                  />
+                  <Route path='/calendar' element={<TaskCalendar tasks={tasks} />} />
+                  <Route path='/profile' element={<div>User Account</div>} />
+                </Routes>
+                <ToastContainerWrapper />
+              </>
+            )}
+        </div>
       </div>
-      {/**Show loader while data is being fetched */}
-      {
-        loading ? (
-          <Loader />
-        ) : (
-          <>
-            {/* Task input form */}
-            <TaskForm onAddTask={addTask} />
-            {/** Dropdown menu to allow user to select how tasks are sorted */}
-            <div className='mb-3'>
-              <label htmlFor="sortSelect" className='form-label fw-semibold'>Sort Tasks:</label>
-
-              {/** Select input to choose sort option */}
-              <select
-                id='sortSelect' // <- Associates with label
-                className='form-select'
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}//Cast to expected sort type
-              >
-                <option value='default'>Default (by creation)</option>
-                <option value='status'>By Status (Pending → completed)</option>
-                <option value='status-reverse'>By Status (Completed → Pending)</option>
-              </select>
-            </div>
-            {/* Display list of the tasks */}
-            <TaskList tasks={tasks}
-              onStatusChange={handleStatusChange}
-              onDelete={deleteTask}
-              sortBy={sortBy}
-            />
-            <TaskCalendar tasks={tasks} />
-            <ToastContainerWrapper />
-          </>
-        )}
-    </div>
-
+    </Router>
   );
 }
-
 export default App
