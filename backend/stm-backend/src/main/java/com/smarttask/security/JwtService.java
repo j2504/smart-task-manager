@@ -1,5 +1,6 @@
 package com.smarttask.security;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.*;
@@ -48,9 +49,9 @@ public class JwtService {
 	/*
 	 *Checks if token is valid (not expired and matches user)
 	 */
-	public boolean isTokenValid(String token, String username) {
-		final String extractedUsername = extractUsername(token);
-		return (extractedUsername.equals(username)) && !isTokenExpired(token);
+	public boolean isTokenValid(String token, UserDetails userDetails) {
+		final String username = extractUsername(token);
+		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 	
 	/*
