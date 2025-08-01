@@ -2,6 +2,10 @@ package com.smarttask.repository;
 
 
 import com.smarttask.model.Task;
+import com.smarttask.model.User;
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -9,5 +13,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Inherits basic CRUD operations from JpaRepository.
  */
 public interface TaskRepository extends JpaRepository<Task, Long> {
-	//No extra code needed - JpaRepository provides all common operations
+	// Custom query method to find tasks owned by a specific user
+	List<Task> findByUser(User user);
 }

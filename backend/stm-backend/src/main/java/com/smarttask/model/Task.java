@@ -30,4 +30,7 @@ public class Task {
 	//used to track when a task is due
 	private LocalDate dueDate;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user; // The owner of this task
 }
