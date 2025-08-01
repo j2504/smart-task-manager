@@ -12,6 +12,7 @@ import type { CreateTask, Task } from './types/Task.ts';
 import * as taskService from './services/taskService.ts';
 import axios from 'axios';
 import Sidebar from './components/Sidebar.tsx';
+import LoginForm from './components/LoginForm.tsx';
 
 
 /**
@@ -166,6 +167,7 @@ function App() {
                   />
                   <Route path='/calendar' element={<TaskCalendar tasks={tasks} />} />
                   <Route path='/profile' element={<div>User Account</div>} />
+                  <Route path='/login' element={<LoginForm onLoginSuccess={(token) => { localStorage.setItem("token", token) }} />} />
                 </Routes>
                 <ToastContainerWrapper />
               </>

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.smarttask.dto.AuthResponse;
 import com.smarttask.dto.LoginRequest;
 import com.smarttask.dto.RegisterRequest;
+import com.smarttask.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 

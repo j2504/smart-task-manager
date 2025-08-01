@@ -1,10 +1,16 @@
 package com.smarttask.dto;
 
-import lombok.Builder;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+/*
+ * LoginRequest- represents login credentials (userName + password)*/
+
 public class LoginRequest {
 	private String userName;
 	private String password;

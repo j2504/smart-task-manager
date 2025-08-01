@@ -59,8 +59,12 @@ public class AuthService {
 		//Load user and generate JWT
 		User user = userRepository.findByUserName(request.getUserName())
 				.orElseThrow(() -> new RuntimeException("User not found"));
+		
+		//Generate JWT
 		String token = jwtService.generateToken(user);
 		
-		return new AuthResponse(token);
+		return AuthResponse.builder()
+				.token(token)
+				.build();
 	}
 }
