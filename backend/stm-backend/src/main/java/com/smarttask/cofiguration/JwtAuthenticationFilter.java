@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
-		final String username;
+		final String userName;
 		
 		//Check if Authorization header is valid
 		if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -47,11 +47,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		
 		jwt = authHeader.substring(7); // Remove "Bearer " prefix
-		username = jwtService.extractUsername(jwt);
+		userName = jwtService.extractUsername(jwt);
 		
 		//Only proceed if user is not already authenticated
-		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = this.userService.loadUserByUsername(username);
+		if(userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = this.userService.loadUserByUsername(userName);
 			
 			if(jwtService.isTokenValid(jwt, userDetails)) {
 				UsernamePasswordAuthenticationToken authenticationToken = 

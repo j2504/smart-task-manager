@@ -19,8 +19,8 @@ public class UserService implements UserDetailsService {
 	
 	//Spring Security method to load user by username
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByUsername(username)
+	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+		User user = userRepository.findByUserName(userName)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 		return new CustomUserDetails(user);
 	}
@@ -28,8 +28,8 @@ public class UserService implements UserDetailsService {
 	/*
 	 * Finds a user by username (used by controller)
 	 */
-	public User findByUserName(String username) {
-		return userRepository.findByUsername(username)
+	public User findByUserName(String userName) {
+		return userRepository.findByUserName(userName)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 	}
 	

@@ -32,8 +32,8 @@ public class TaskController {
 	 */
 	@GetMapping
 	public ResponseEntity<List<Task>> getAllUserTasks(Authentication authentication){
-		String username = authentication.getName();
-		User user = userService.findByUserName(username);
+		String userName = authentication.getName();
+		User user = userService.findByUserName(userName);
 		
 		List<Task> tasks = taskService.getTasksByUser(user);
 		return ResponseEntity.ok(tasks);
@@ -45,8 +45,8 @@ public class TaskController {
 	@PostMapping
 	public ResponseEntity<Task> createTask(@RequestBody Task task, Authentication authentication) {
 		// Retrieve the current user based on the authentication
-		String username = authentication.getName();
-		User user = userService.findByUserName(username);
+		String userName = authentication.getName();
+		User user = userService.findByUserName(userName);
 		
 		// Call the service to save task and assign it to user
 		Task savedTask = taskService.addTask(task, user);
