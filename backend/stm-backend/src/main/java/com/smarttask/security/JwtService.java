@@ -1,12 +1,20 @@
 package com.smarttask.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.smarttask.model.User;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+
+
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 
@@ -16,75 +24,92 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 	
-	// Secret Key used to sign the JWT. In production, store securely in environment variables or config
-	private static final String SECRET_KEY = "12345678901234567890123456789012"; // Must be at least 256-bit (32 chars)
-	
-	/*
-	 * Extracts the username (subject) from the JWT token
-	 */
-	public String extractUsername(String token) {
-		return extractClaim(token, Claims::getSubject);
-	}
-	
-	/*
-	 * Extract a single claim using a resolver
-	 */
-	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-		final Claims claims = extractAllClaims(token);
-		return claimsResolver.apply(claims);
-	}
-	
-	/*
-	 * Generates a JWT token for the given username
-	 */
-	public String generateToken(String username) {
-		return Jwts.builder()
-				.setSubject(username) // Sets the user identifier
-				.setIssuedAt(new Date(System.currentTimeMillis())) //Token creation time
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) //24 hours expiration
-				.signWith(getSignInKey(), SignatureAlgorithm.HS256) //Signs the token
-				.compact();
-	}
-	
-	/*
-	 *Checks if token is valid (not expired and matches user)
-	 */
-	public boolean isTokenValid(String token, UserDetails userDetails) {
-		final String userName = extractUsername(token);
-		return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
-	}
-	
-	/*
-	 * Check if the token has expired
-	 */
-	private boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
-	}
-	
-	/*
-	 * Extract the expiration date from the token
-	 */
-	private Date extractExpiration(String token) {
-		return extractClaim(token, Claims::getExpiration);
-	}
-	
-	/*
-	 * Parses and retrieves all claims from the token
-	 */
-	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder()
-				.setSigningKey(getSignInKey())
-				.build()
-				.parseClaimsJws(token)
-				.getBody();
-	}
-	
-	/*
-	 * Returns the signing key used to verify the JWT signature
-	 */
-	private Key getSignInKey() {
-		byte[] keyBytes = SECRET_KEY.getBytes(); //Convert secret key to byte array
-		return Keys.hmacShaKeyFor(keyBytes);
-				
- 	}
+	// Secret key to sign the JWTs (should be stored securely in env vars or config)
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    // Token expiration time in milliseconds (e.g. 1 day)
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+
+    @PostConstruct
+    private void init() {
+        if (secretKey == null || secretKey.trim().isEmpty()) {
+            secretKey = "default_secret_key"; // fallback (not recommended in prod)
+        }
+        if (jwtExpiration == 0) {
+            jwtExpiration = 86400000; // fallback to 1 day
+        }
+    }
+
+    /**
+     * Generates a JWT for a user.
+     */
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, user.getUserName());
+    }
+
+    /**
+     * Validates token and checks if it belongs to the user.
+     */
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    /**
+     * Extracts username (subject) from token.
+     */
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
+     * Checks if token is expired.
+     */
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    /**
+     * Extracts expiration date from token.
+     */
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    /**
+     * Extracts a claim using a resolver.
+     */
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    /**
+     * Parses and validates JWT using the secret key.
+     */
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey.getBytes())
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * Builds the JWT with claims and signs it.
+     */
+    private String createToken(Map<String, Object> claims, String subject) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + jwtExpiration);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .compact();
+    }
 }
