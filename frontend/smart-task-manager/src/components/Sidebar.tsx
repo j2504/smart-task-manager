@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 function Sidebar() {
     return (
         <div className='d-flex flex-column flex-shrink-0 p-3 bg-light' style={{ width: '250px', height: '100vh' }}>
-            <h4 className='text-primary fw-bold'>SmartTask</h4>
+            <h4 className='text-primary fw-bold'>🧠SmartTask</h4>
             <hr />
             <ul className='nav nav-pills flex-column mb-auto'>
                 <li className='nav-item'>
@@ -33,7 +33,7 @@ function Sidebar() {
             </ul>
             <hr />
             <div>
-                <span className='text-muted'> 🔐 Login</span>
+                <NavLink to="/login" className='nav-link text-dark'> 🔐 Login</NavLink>
             </div>
         </div>
     );

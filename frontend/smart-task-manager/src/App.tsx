@@ -13,6 +13,7 @@ import * as taskService from './services/taskService.ts';
 import axios from 'axios';
 import Sidebar from './components/Sidebar.tsx';
 import LoginForm from './components/LoginForm.tsx';
+import RegisterForm from './components/RegisterForm.tsx';
 
 
 /**
@@ -125,7 +126,7 @@ function App() {
               <>
                 {/** Header section with dark mode toggle */}
                 <div className='d-flex justify-content-between align-items-center mb-4'>
-                  <h1 className='text-center fw-bold mb-4'>Smart Task Manager</h1>
+                  <h1 className='text-center fw-bold mb-4'>🧠Smart Task Manager</h1>
                   {/** Dark/Light toggle button */}
                   <button className={`btn btn-sm ${theme === 'dark' ? 'btn-light' : 'btn-dark'}`}
                     onClick={toggleTheme}>
@@ -168,6 +169,7 @@ function App() {
                   <Route path='/calendar' element={<TaskCalendar tasks={tasks} />} />
                   <Route path='/profile' element={<div>User Account</div>} />
                   <Route path='/login' element={<LoginForm onLoginSuccess={(token) => { localStorage.setItem("token", token) }} />} />
+                  <Route path='/register' element={<RegisterForm />} />
                 </Routes>
                 <ToastContainerWrapper />
               </>

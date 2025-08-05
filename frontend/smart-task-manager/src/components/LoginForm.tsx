@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { NavLink } from "react-router-dom";
 
 interface LoginFormProps {
     onLoginSuccess: (token: string) => void;
@@ -74,7 +75,9 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
             </div>
 
             {/** Submit Button */}
-            <button type="submit" className="btn btn-primary">Login</button>
+            <button type="submit" className="btn btn-primary me-2">🔐Login</button>
+
+            <NavLink to="/register" className="btn btn-success">👉SignUp</NavLink>
         </form>
     );
 }

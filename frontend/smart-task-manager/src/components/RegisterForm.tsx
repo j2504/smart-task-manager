@@ -60,7 +60,7 @@ function RegisterForm() {
     return (
 
         <form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
-            <h2 className="mb-4 fw-bold">Register</h2>
+            <h2 className="mb-4 fw-bold text-center"> 👉Sign Up</h2>
             {/** First Name Input */}
             <div className="mb-3">
                 <label htmlFor="firstName" className="form-label fw-semibold" >First Name</label>
@@ -131,7 +131,7 @@ function RegisterForm() {
             </div>
 
             {/** Submit Button */}
-            <button type="submit" className="btn btn-primary w-100 fw-bold"> Register </button>
+            <button type="submit" className="btn btn-success w-100 fw-bold"> Register </button>
         </form>
     );
 }
