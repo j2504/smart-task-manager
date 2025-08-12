@@ -27,17 +27,13 @@ public class TaskController {
 	private final TaskService taskService;
 	private final UserService userService;
 	
-	/*
-	 * Get all tasks for the currently authenticated user
-	 */
-	@GetMapping
-	public ResponseEntity<List<Task>> getAllUserTasks(Authentication authentication){
-		String userName = authentication.getName();
-		User user = userService.findByUserName(userName);
-		
-		List<Task> tasks = taskService.getTasksByUser(user);
-		return ResponseEntity.ok(tasks);
-	}
+	/**
+     * Get all tasks for the currently logged-in user.
+     */
+    @GetMapping
+    public ResponseEntity<List<Task>> getTasks() {
+        return ResponseEntity.ok(taskService.getAllTasks());
+    }
 	
 	/*
 	 * Creates a new task and assigns it to the authenticated user
@@ -49,18 +45,25 @@ public class TaskController {
 		User user = userService.findByUserName(userName);
 		
 		// Call the service to save task and assign it to user
-		Task savedTask = taskService.addTask(task, user);
+		Task savedTask = taskService.addTask(task);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
 	}
 	
-	@PutMapping("/{id}")
-	public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
-		return taskService.updateTask(id, task);
-	}
-	
-	@DeleteMapping("/{id}")
-	public void deleteTask(@PathVariable Long id) {
-		taskService.deleteTask(id);
-	}
+	/**
+     * Update the status of an existing task (must be owned by current user).
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
+        return ResponseEntity.ok(taskService.updateTask(id, updatedTask));
+    }
+
+    /**
+     * Delete a task (must be owned by current user).
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
 }
