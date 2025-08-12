@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, type ReactNode, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
@@ -11,15 +12,10 @@ interface AuthContextType {
 }
 
 // 2. Create the context with default empty values
-const AuthContext = createContext<AuthContextType>({
-    token: null,
-    isLoggedIn: false,
-    setToken: () => { },
-    logout: () => { }
-})
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // 3. AuthProvider to wrap the app
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setTokenState] = useState<string | null>(() => {
         return localStorage.getItem('token');
     });
