@@ -1,24 +1,24 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 import type { Task } from '../types/Task';
 
-const Base_URL = 'http://localhost:8080/api/tasks'; //Backend url
+const TASKS_URL = '/tasks'; //relative to apiClient's baseURL
 
 export const getTasks = async (): Promise<Task[]> => {
-    const res = await axios.get(Base_URL);
+    const res = await apiClient.get(TASKS_URL);
     return res.data;
 }
 
 export const createTask = async(title: string): Promise<Task> => {
-    const res = await axios.post(Base_URL, {title, status:"pending"});
+    const res = await apiClient.post(TASKS_URL, {title, status:"pending"});
     return res.data;
 } 
 
 export const updateTaskStatus = async (id:number, status: Task['status']): Promise<Task> => {
-    const res = await axios.put(`${Base_URL}/${id}`,{status});
+    const res = await apiClient.put(`${TASKS_URL}/${id}`,{status});
     return res.data;
 }
 
 export const deleteTask = async (id: number):Promise<void> => {
-     await axios.delete(`${Base_URL}/${id}`);
+     await apiClient.delete(`${TASKS_URL}/${id}`);
     
 }

@@ -1,22 +1,23 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
-import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 interface LoginFormProps {
-    onLoginSuccess: (token: string) => void;
+    onLoginSuccess?: (token: string) => void;
 }
 
 /**
-* LoginForm component - * allow users to log in * with username and 
-* password 
-*/
+ * LoginForm component - allows users to log in with username and password
+ */
 function LoginForm({ onLoginSuccess }: LoginFormProps) {
-    //State for form fields
-    const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
+
+    const auth = useContext(AuthContext);
 
     /**
      * Handles form submission - sends login request to backend
@@ -25,15 +26,26 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/login", {
-                userName,
-                password
-            });
+            const response = await axios.post(
+                "http://localhost:8080/api/auth/login",
+                { userName, password }
+            );
 
             const token = response.data.token;
-            onLoginSuccess(token); // Store token in state/localStorage
+
+            // Store in AuthContext and localStorage
+            if (auth) {
+                auth.setToken(token);
+            } else {
+                localStorage.setItem("token", token);
+            }
+
+            if (onLoginSuccess) {
+                onLoginSuccess(token);
+            }
+
             toast.success("Login successful!");
-            navigate("/");//Redirect to homepage/tasks
+            navigate("/"); // Redirect to homepage/tasks
         } catch (error) {
             console.error("Login failed:", error);
             toast.error("Invalid credentials. Please try again.");
@@ -44,7 +56,7 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
         <form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm">
             <h3 className="mb-3 fw-bold">Login</h3>
 
-            {/** UserName Field */}
+            {/* Username Field */}
             <div className="mb-3">
                 <label htmlFor="userName" className="form-label fw-semibold">
                     Username
@@ -59,7 +71,7 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
                 />
             </div>
 
-            {/** Password Field */}
+            {/* Password Field */}
             <div className="mb-3">
                 <label htmlFor="password" className="form-label fw-semibold">
                     Password
@@ -74,10 +86,14 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
                 />
             </div>
 
-            {/** Submit Button */}
-            <button type="submit" className="btn btn-primary me-2">🔐Login</button>
+            {/* Submit Button */}
+            <button type="submit" className="btn btn-primary me-2">
+                🔐 Login
+            </button>
 
-            <NavLink to="/register" className="btn btn-success">👉SignUp</NavLink>
+            <NavLink to="/register" className="btn btn-success">
+                👉 Sign Up
+            </NavLink>
         </form>
     );
 }
