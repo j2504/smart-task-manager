@@ -25,6 +25,7 @@ import java.util.List;
 public class TaskController {
 	
 	private final TaskService taskService;
+	private final UserService userService;
 
 	
 	/**
@@ -42,8 +43,11 @@ public class TaskController {
 	@PostMapping
 	public ResponseEntity<Task> createTask(@RequestBody Task task, Authentication authentication) {
 		
+		//Retrieve the current user based on the authentication
+		String userName = authentication.getName();
+		User user = userService.findByUserName(userName);
 		// Call the service to save task and assign it to user
-		Task savedTask = taskService.addTask(task);
+		Task savedTask = taskService.addTask(task, user);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
 	}

@@ -32,9 +32,9 @@ public class TaskService {
     /**
      * Adds a new task and assigns it to the authenticated user.
      */
-    public Task addTask(Task task) {
-        User currentUser = getCurrentUser();
-        task.setUser(currentUser); // Associate task with the logged-in user
+    public Task addTask(Task task, User user) {
+        
+        task.setUser(user); // Associate task with the logged-in user
         return repo.save(task);
     }
 

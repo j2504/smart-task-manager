@@ -1,5 +1,4 @@
 import { Calendar, type Event } from 'react-big-calendar';
-import type { Task } from '../types/Task';
 import { format } from 'date-fns/format';
 import { parse } from 'date-fns/parse';
 import { startOfWeek } from 'date-fns/startOfWeek';
@@ -8,6 +7,7 @@ import { dateFnsLocalizer } from 'react-big-calendar';
 import { enUS } from 'date-fns/locale';
 import { useMemo, useState } from 'react';
 import { type View, Views } from 'react-big-calendar';
+import { useTasks } from "../context/TaskContext";
 
 // Configure date-fns localizer for react-big-calendar
 const locales = {
@@ -22,16 +22,11 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-
-
-interface TaskCalendarProps {
-    tasks: Task[];
-}
-
 /**
 * TaskCalendar displays task due dates on a calendar view using react-big-calendar
 */
-function TaskCalendar({ tasks }: TaskCalendarProps) {
+function TaskCalendar() {
+    const { tasks } = useTasks();
     //Add state for view and date
     const [view, setView] = useState<View>(Views.MONTH); //'month', 'week', etc.
     const [date, setDate] = useState(new Date());
