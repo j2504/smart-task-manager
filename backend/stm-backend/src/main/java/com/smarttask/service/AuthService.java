@@ -26,6 +26,7 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
+	private final EmailService emailService;
 	
 	/*
 	 * Registers a new user and returns a JWT token.
@@ -36,9 +37,12 @@ public class AuthService {
 				.lastName(request.getLastName())
 				.userName(request.getUserName())
 				.password(passwordEncoder.encode(request.getPassword()))
+				.email(request.getEmail())
 				.build();
 		
 		userRepository.save(user);
+		//Send welcome email
+		emailService.sendWelcomeEmail(user.getEmail(), user.getUserName());
 		
 		String token = jwtService.generateToken(user);
 		return new AuthResponse(token);

@@ -12,14 +12,13 @@ public class EmailService {
 
 		private final JavaMailSender mailSender;
 		/**
-		 * Sends a simple text email
+		 * Sends a welcome email
 		 */
-		public void sendEmail(String to, String subject, String text) {
+		public void sendWelcomeEmail(String toEmail, String userName) {
 			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(to);
-			message.setSubject(subject);
-			message.setText(text);
-			message.setFrom("jerryjr0425@gmail.com");
+			message.setTo(toEmail);
+			message.setSubject("Welcome to Smart Task Manager 🎉 ");
+			message.setText( "Hello " + userName + ", thanks for registering! You can now log in and manage your tasks 🚀");
 			mailSender.send(message);
 		}
 }
