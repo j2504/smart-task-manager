@@ -19,12 +19,19 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     const fetchTasks = async () => {
+        const token = localStorage.getItem("token"); // Only fetch if logged in
+        if (!token) {
+            setTasks([]);
+            return;
+        }
+
         try {
             const data = await getTasks();
             setTasks(data);
         } catch (err) {
             console.error("Failed to fetch tasks", err);
         }
+
     };
 
     const addTask = async (title: string) => {
@@ -60,7 +67,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Load tasks initially
+    // Load tasks only if logged in
     useEffect(() => {
         fetchTasks();
     }, []);

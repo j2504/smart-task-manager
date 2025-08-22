@@ -4,6 +4,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { useTasks } from "../context/TaskContext";
 
 interface LoginFormProps {
     onLoginSuccess?: (token: string) => void;
@@ -18,6 +19,7 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
     const navigate = useNavigate();
 
     const auth = useContext(AuthContext);
+    const { fetchTasks } = useTasks();
 
     /**
      * Handles form submission - sends login request to backend
@@ -36,14 +38,14 @@ function LoginForm({ onLoginSuccess }: LoginFormProps) {
             // Store in AuthContext and localStorage
             if (auth) {
                 auth.setToken(token);
-            } else {
-                localStorage.setItem("token", token);
             }
+            localStorage.setItem("token", token);
 
             if (onLoginSuccess) {
                 onLoginSuccess(token);
             }
 
+            await fetchTasks();
             toast.success("Login successful!");
             navigate("/"); // Redirect to homepage/tasks
         } catch (error) {

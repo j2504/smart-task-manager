@@ -1,13 +1,21 @@
 import { NavLink } from 'react-router-dom';
+import { ThemeContext } from "../context/ThemeContext"
+import { useContext } from 'react';
 
 /**
 * Sidebar navigation for main sections of the app
 */
 
 function Sidebar() {
+    const { theme, toggleTheme } = useContext(ThemeContext);
     return (
         <div className='d-flex flex-column flex-shrink-0 p-3 bg-light' style={{ width: '250px', height: '100vh' }}>
             <h4 className='text-primary fw-bold'>🧠SmartTask</h4>
+            {/** Dark/Light toggle button */}
+            <button className={`btn btn-sm ${theme === 'dark' ? 'btn-light' : 'btn-dark'}`}
+                onClick={toggleTheme}>
+                {theme === 'dark' ? ' ☀ Light Mode' : ' 🌙 Dark Mode'}
+            </button>
             <hr />
             <ul className='nav nav-pills flex-column mb-auto'>
                 <li className='nav-item'>

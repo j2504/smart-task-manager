@@ -15,7 +15,7 @@ import com.smarttask.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class UserController {
 	
 	@Autowired
